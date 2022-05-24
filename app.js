@@ -1,13 +1,21 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+
 require('dotenv').config();
 
 const app = express();
 
+app.use(bodyParser.json());
+
+const auth = require('./routes/auth.js');
+
+app.use(auth);
 
 app.get('/', (req, res) => {
     res.send({'message': 'Hello World!'});
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
