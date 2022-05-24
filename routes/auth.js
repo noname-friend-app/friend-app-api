@@ -85,5 +85,32 @@ router.post('/login', async (req, res) => {
     });
 });
 
+router.post('/check-token', async (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+        return res.status(400).send({
+            message: 'Please provide a token'
+        });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await prisma.user.findFirst({
+            where: {
+                id: decoded.id
+            }
+        });
+        return res.status(200).send({
+            message: 'Token is valid',
+            user
+        });
+    } catch (err) {
+        return res.status(400).send({
+            message: 'Invalid token'
+        });
+    }
+
+});
 
 module.exports = router;
