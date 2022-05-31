@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 const auth = require('./routes/auth.js');
 

@@ -1,12 +1,15 @@
-FROM node:15
+# FROM ubuntu:latest
+FROM node:latest
 WORKDIR /app
-COPY package.json ./
-run npm install
-COPY . .
-run npx prisma generate
-EXPOSE 3000
 
-RUN chmod +x docker-entrypoint.sh
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# RUN apt update
+# RUN apt install nodejs -y
+# RUN apt install npm -y
+
+COPY package.json ./
+RUN npm install
+COPY . ./
+RUN npx prisma generate
+EXPOSE 3000
 
 CMD ["npm", "start"]
