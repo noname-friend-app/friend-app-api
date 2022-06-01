@@ -32,18 +32,18 @@ router.post('/signup', async (req, res) => {
             password: hash
         }
     })
-    .catch(err => {
-        console.log('Error creating user: ', err);
-        return res.status(400).send({
-            message: 'Email or username already exists'
-        });
-    })
     .then(user => {
         const token = generateToken(user);
         return res.status(201).send({
             message: 'User created successfully',
             user,
             token
+        });
+    })
+    .catch(err => {
+        console.log('Error creating user: ', err);
+        return res.status(400).send({
+            message: 'Email or username already exists'
         });
     });
 });
