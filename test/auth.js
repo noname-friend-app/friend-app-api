@@ -12,88 +12,99 @@ chai.use(chaiHttp);
 
 
 describe('Auth', () => {
+
+    before(async () => {
+        // delete all the users
+        const users = await prisma.user.findMany();
+        for (let i = 0; i < users.length; i++) {
+            await prisma.user.delete({
+                where: {
+                    id: users[i].id
+                }
+            });
+        }
+    });
     
-    it('should create a new user on signup and return a token', (done) => {
-        chai.request(server)
+    it('should create a new user on signup and return a token', async () => {
+        const res = await chai.request(server)
             .post('/signup')
             .send({
                 email: 'test@email.com',
                 username: 'test',
                 password: 'test'
             })
-            .then((res) => {
-                // console.log(res.body);
-                res.status.should.equal(201);
-                res.body.should.have.property('token');
-            })
-
-        done();
+        // // console.log(res.body);
+        // console.log('test done');
+        // console.log('test done');
     });
 
-    it('should return a token on login', (done) => {
-        chai.request(server)
+    it('should return a token on login', async () => {
+        const res = await chai.request(server)
             .post('/login')
             .send({
                 username: 'test',
                 password: 'test'
             })
-            .then(res => {
-                res.status.should.equal(200);
-                res.body.should.have.property('token');
-            });
-        done();
+
+        assert.equal(res.status, 200);
+        assert.ok(res.body.token);
     });
 
-    it('should return a 401 error on login with invalid credentials', (done) => {
-        chai.request(server)
+    it('should allow you to use your email to login', async () => {
+        const res = await chai.request(server)
+            .post('/login')
+            .send({
+                email: 'test@email.com',
+                password: 'test'
+            })
+            
+        assert.equal(res.status, 200);
+        assert.ok(res.body.token);
+    });
+
+    it('should return a 401 error on login with invalid credentials', async () => {
+        const res = await chai.request(server)
             .post('/login')
             .send({
                 username: 'test',
                 password: 'wrong'
             })
-            .then(res => {
-                // console.log(res.body);
-                res.status.should.equal(400);
-                res.body.should.have.property('message');
-            });
-            done();
+            // console.log(res.body);
+        assert.equal(res.status, 400);
+        assert.ok(res.body.message);
     });
 
-    it('should be able to check if a token is valid', (done) => {
-        chai.request(server)
+    it('should be able to check if a token is valid', async () => {
+        const res = await chai.request(server)
             .post('/login')
             .send({
                 username: 'test',
                 password: 'test'
             })
-            .then(res => {
-                res.status.should.equal(200);
-                res.body.should.have.property('token');
-                chai.request(server)
-                    .post('/check-token')
-                    .send({
-                        token: res.body.token
-                    })
-                    .then(res => {
-                        assert(res.status, 200);
-                        res.status.should.equal(200);
-                        res.body.should.have.property('message');
-                        res.body.should.have.property('user');
-                        done();
-                    });
-                });
-            done();
+
+        assert.equal(res.status, 200);
+        assert.ok(res.body.token);
+
+        const res2 = await chai.request(server)
+            .post('/check-token')
+            .send({
+                token: res.body.token
+            })
+                
+        assert.equal(res.status, 200);
+        assert.ok(res.body.message);
+        assert.ok(res.body.user);
     });
 
-    after( async () => {
-        try {
-            await prisma.user.deleteMany({
+    after(async () => {
+        //delete test user
+        const users = await prisma.user.findMany();
+        for (let i = 0; i < users.length; i++) {
+            await prisma.user.delete({
                 where: {
-                    username: 'test'
+                    id: users[i].id
                 }
             });
-        } catch (error) {
-            console.log(error);
         }
     });
 
