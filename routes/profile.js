@@ -14,7 +14,6 @@ router.get('/profile', getUser, async (req, res) => {
             user: true
         }
     })
-
     // console.log(profile, !profile);
 
     if (!profile) {
