@@ -49,23 +49,32 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !password) {
+    if (!email && !username) {
         return res.status(400).send({
-            message: 'Please provide username and password'
+            message: 'Please provide email or username'
+        });
+    }
+
+    if (!password) {
+        return res.status(400).send({
+            message: 'Please provide password'
         });
     }
 
     const user = await prisma.user.findFirst({
         where: {
-            username
+            OR: [
+                { email },
+                { username }
+            ]
         }
     });
 
     if (!user) {
         return res.status(400).send({
-            message: 'User not found'
+            message: 'No user exists with that email or username'
         });
     }
 
