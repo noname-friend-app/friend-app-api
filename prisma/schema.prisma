@@ -26,6 +26,6 @@ model Profile {
   pronouns String
   birthday DateTime
 
-  userId String 
+  userId String @unique
   user User @relation(fields: [userId], references: [id])
 }
