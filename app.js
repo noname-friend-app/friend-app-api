@@ -13,9 +13,11 @@ app.use(bodyParser.json());
 
 const auth = require('./routes/auth.js');
 const profile = require('./routes/profile.js');
+const groups = require('./routes/groups.js');
 
 app.use(auth);
 app.use(profile);
+app.use(groups);
 
 app.get('/', (req, res) => {
     res.send({

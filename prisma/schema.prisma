@@ -17,6 +17,7 @@ model User {
   password String
 
   profile Profile?
+  groupMembers GroupMember[]
 }
 
 model Profile {
@@ -28,4 +29,24 @@ model Profile {
 
   userId String @unique
   user User @relation(fields: [userId], references: [id])
+}
+
+model Group {
+  id String @id @default(cuid())
+  name String @unique
+  description String
+  groupImageUrl String?
+
+  members GroupMember[]
+}
+
+model GroupMember {
+  id String @id @default(cuid())
+  isAdmin Boolean @default(false)
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+
+  groupId String @unique
+  group Group @relation(fields: [groupId], references: [id])
 }
