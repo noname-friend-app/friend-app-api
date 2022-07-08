@@ -12,8 +12,8 @@ const router = express.Router();
  * Get joined Groups x
  * Get Group by id x
  * Join a group x
- * Edit a group 
- * Delete a group
+ * Edit a group x
+ * Delete a group 
  * Remove User from group
  * Get group info
  * Get group members
@@ -246,5 +246,53 @@ router.put('/groups/:id/edit', getUser, async (req, res) => {
         'group': group
     });
 });
+
+// delete a group (owner only)
+router.delete('/groups/:id/delete', getUser, async (req, res) => {
+    const id = req.params.id;
+    
+    const foundMember = await prisma.groupMember.findFirst({
+        where: {
+            userId: req.user.id,
+            groupId: id
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send({
+            'message': 'Internal server error'
+        });
+    });
+
+    if (!foundMember) {
+        return res.status(404).send({
+            message: 'You are not a member of this group'
+        });
+    }
+
+    if (foundMember.role !== 'owner') {
+        return res.status(403).send({
+            'message': 'You are not the owner of this group'
+        });
+    }
+
+    const group = await prisma.group.delete({
+        where: {
+            id: id
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send({
+            'message': 'Internal server error'
+        });
+    });
+
+    return res.status(200).send({
+        'message': 'Group deleted',
+        'group': group
+    });
+});
+
 
 module.exports = router;

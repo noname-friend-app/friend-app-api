@@ -128,6 +128,29 @@ describe('Groups', () => {
         assert.equal(res2.body.group.description, 'This is a test group 2', 'Group was not edited');
     });
 
+    it('should be able to delete existing group', async () => {
+        const res = await chai.request(server)
+            .get('/groups/joined')
+            .set('authToken', authtoken);
+        
+        // verify that a list of groups was returned
+        assert.equal(res.status, 200, 'Groups were not returned');
+        assert.ok(res.body.groups, 'Groups were not returned');
+        
+        // get the first group
+        const group = res.body.groups[0];
+        assert.ok(group, 'Group was not returned');
+
+        const res2 = await chai.request(server)
+            .delete(`/groups/${group.id}/delete`)
+            .set('authToken', authtoken);
+
+        // verify that the group was deleted
+        assert.equal(res2.status, 200, 'Group was not deleted');
+        assert.ok(res2.body.group, 'Group was not deleted');
+        assert.equal(res2.body.group.name, group.name, 'Group was not deleted');
+    });
+
     after(async () => {
         //delete all the profiles and users
         await prisma.user.deleteMany({})
