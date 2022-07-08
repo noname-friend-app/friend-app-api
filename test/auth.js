@@ -15,14 +15,8 @@ describe('Auth', () => {
 
     before(async () => {
         // delete all the users
-        const users = await prisma.user.findMany();
-        for (let i = 0; i < users.length; i++) {
-            await prisma.user.delete({
-                where: {
-                    id: users[i].id
-                }
-            });
-        }
+        await prisma.user.deleteMany({})
+        await prisma.profile.deleteMany({})
     });
     
     it('should create a new user on signup and return a token', async () => {
@@ -104,8 +98,10 @@ describe('Auth', () => {
                 where: {
                     id: users[i].id
                 }
+            }).catch(err => {
+                // console.log(err);
             });
         }
-    });
+    })
 
 });

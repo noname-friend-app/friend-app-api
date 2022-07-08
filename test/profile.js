@@ -13,14 +13,8 @@ chai.use(chaiHttp);
 describe('Profiles', () => {
     before(async () => {
         // delete all the users
-        const users = await prisma.user.findMany();
-        for (let i = 0; i < users.length; i++) {
-            await prisma.user.delete({
-                where: {
-                    id: users[i].id
-                }
-            });
-        }
+        await prisma.user.deleteMany({})
+        await prisma.profile.deleteMany({})
 
         // create a new user
         const res = await chai.request(server)

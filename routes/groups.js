@@ -9,9 +9,10 @@ const router = express.Router();
 
 /**
  * Create a new group x
- * Get joined Groups
+ * Get joined Groups x
+ * Get Group by id x
  * Join a group x
- * Edit a group
+ * Edit a group 
  * Delete a group
  * Remove User from group
  * Get group info
@@ -19,6 +20,7 @@ const router = express.Router();
  * promote or demote users
  */
 
+// create groups
 router.post('/groups/new', getUser, async (req, res) => {
     if (!req.body.name || !req.body.description) {
         return res.status(400).send({
@@ -98,7 +100,40 @@ router.get('/groups/joined', getUser, async (req, res) => {
 
 });
 
+// get group by id
+router.get('/groups/:id', async (req, res) => {
+    const group = await prisma.group.findFirst({
+        where: {
+            id: req.params.id
+        },
+        include: {
+            members: {
+                include: {
+                    user: true
+                }
+            }
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send({
+            'message': 'Internal server error'
+        });
+    });
 
+    if (!group) {
+        return res.status(404).send({
+            'message': 'Group not found'
+        });
+    }
+
+    return res.status(200).send({
+        'message': 'Group retrieved',
+        'group': group
+    });
+});
+
+// join a group
 router.post('/groups/join', getUser, async (req, res) => {
     if (!req.body.joinCode) {
         return res.status(400).send({
@@ -161,6 +196,54 @@ router.post('/groups/join', getUser, async (req, res) => {
         'message': 'You have joined the group',
         'group': group,
         'member': newMember
+    });
+});
+
+// edit a group
+router.put('/groups/:id/edit', getUser, async (req, res) => {
+    const id = req.params.id;
+    
+    const foundMember = await prisma.groupMember.findFirst({
+        where: {
+            userId: req.user.id,
+            groupId: id
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send({
+            'message': 'Internal server error'
+        });
+    });
+
+    if (!foundMember) {
+        return res.status(404).send({
+            message: 'You are not a member of this group'
+        });
+    }
+
+    if (foundMember.role !== 'owner') {
+        return res.status(403).send({
+            'message': 'You are not the owner of this group'
+        });
+    }
+
+    const group = await prisma.group.update({
+        where: {
+            id: id
+        },
+        data: req.body
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send({
+            'message': 'Internal server error'
+        });
+    });
+
+    return res.status(200).send({
+        'message': 'Group updated',
+        'group': group
     });
 });
 
