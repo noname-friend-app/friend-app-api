@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 
 require('dotenv').config();
 
@@ -10,6 +11,10 @@ app.use(cors({
     origin: '*'
 }));
 app.use(bodyParser.json());
+
+app.use(morgan('dev'));
+
+// custom middlware
 
 const auth = require('./routes/auth.js');
 const profile = require('./routes/profile.js');
