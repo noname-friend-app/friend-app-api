@@ -22,9 +22,11 @@ app.use(groups);
 app.get('/', (req, res) => {
     res.send({
         'message': 'Hello World!',
+        'docs': 'https://documenter.getpostman.com/view/18191261/UzBto4Zi',
         routes: [
             '/auth',
-            '/profile'
+            '/profile',
+            '/groups'
         ]
     });
 });

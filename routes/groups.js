@@ -109,7 +109,21 @@ router.get('/groups/:id', async (req, res) => {
         include: {
             members: {
                 include: {
-                    user: true
+                    user: {
+                        select: {
+                            username: true,
+                            email: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    bio: true,
+                                    pronouns: true,
+                                    birthday: true
+                                }
+                            }
+                        },
+                    }
                 }
             }
         }
