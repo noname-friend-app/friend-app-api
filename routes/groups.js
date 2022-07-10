@@ -137,13 +137,15 @@ router.get('/groups/:id', async (req, res) => {
 router.post('/groups/join', getUser, async (req, res) => {
     if (!req.body.joinCode) {
         return res.status(400).send({
-            'message': 'Join code is required'
+            'message': 'Join code (joinCode) is required'
         });
     }
 
-    const group = await prisma.Group.findFirst({
+    // console.log(req.body.joinCode);
+
+    const group = await prisma.group.findFirst({
         where: {
-            joinCode: req.joinCode
+            joinCode: req.body.joinCode
         }
     })
     .catch(err => {
@@ -159,26 +161,24 @@ router.post('/groups/join', getUser, async (req, res) => {
         });
     }
 
-    const member = await prisma.Member.findFirst({
+    const foundMember = await prisma.groupMember.findFirst({
         where: {
             userId: req.user.id,
             groupId: group.id
         }
-    })
-    .catch(err => {
-        console.log(err);
-        return res.status(500).send({
-            'message': 'Internal server error'
-        });
     });
+    // console.log('foundMember ', foundMember);
 
-    if (member) {
+    if (foundMember) {
+        // console.log('point')
         return res.status(400).send({
-            'message': 'You are already a member of this group'
+            'message': 'You are already a member of this group',
+            'role': foundMember.role
         });
     }
 
-    const newMember = await prisma.Member.create({
+    
+    const groupMember = await prisma.groupMember.create({
         data: {
             role: 'member',
             userId: req.user.id,
@@ -190,12 +190,12 @@ router.post('/groups/join', getUser, async (req, res) => {
         return res.status(500).send({
             'message': 'Internal server error'
         });
-    });
+    })
 
     return res.status(200).send({
-        'message': 'You have joined the group',
+        'message': 'Group joined',
         'group': group,
-        'member': newMember
+        'member': groupMember
     });
 });
 
