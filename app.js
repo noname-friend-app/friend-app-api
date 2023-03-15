@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const morgan = require('morgan');
+const morgan = require('morgan'); //Logger for requests
+const session = require('express-session');
 
 require('dotenv').config();
 
@@ -11,8 +12,11 @@ app.use(cors({
     origin: '*'
 }));
 app.use(bodyParser.json());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+}));
 
-app.use(morgan('dev'));
+app.use(morgan('dev')); 
 
 // custom middlware
 
