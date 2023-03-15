@@ -76,7 +76,8 @@ router.post('/login', async (req, res) => {
             id: true,
             email: true,
             username: true,
-            password: true
+            password: true,
+            profile: true
         }
     });
 
@@ -101,6 +102,14 @@ router.post('/login', async (req, res) => {
     return res.status(200).send({
         message: 'User logged in successfully',
         user
+    });
+});
+
+router.get('/logout', async (req, res) => {
+    req.session.destroy();
+    console.log(req.session);
+    return res.status(200).send({
+        message: 'User logged out successfully'
     });
 });
 
