@@ -41,4 +41,17 @@ const getUser = async (req, res, next) => {
     next(); // continue to the next middleware
 }
 
-module.exports = { getUser };
+const requireAuth = (req, res, next) => {
+    if (!req.session.user) {
+        return res.status(401).send({
+            message: 'Please login'
+        });
+    }
+    
+    req.user = req.session.user;
+
+    next();
+}
+
+
+module.exports = { getUser, requireAuth };
