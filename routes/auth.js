@@ -30,14 +30,17 @@ router.post('/signup', async (req, res) => {
             email,
             username,
             password: hash
+        }, select: {
+            id: true,
+            email: true,
+            username: true
         }
     })
     .then(user => {
-        const token = generateToken(user);
+        req.session.user = user;
         return res.status(201).send({
             message: 'User created successfully',
-            user,
-            token
+            user
         });
     })
     .catch(err => {
@@ -69,6 +72,11 @@ router.post('/login', async (req, res) => {
                 { email },
                 { username }
             ]
+        }, select: {
+            id: true,
+            email: true,
+            username: true,
+            password: true
         }
     });
 
@@ -86,41 +94,28 @@ router.post('/login', async (req, res) => {
         });
     }
 
-    const token = generateToken(user);
+    // remove password from user object
+    delete user.password;
+    req.session.user = user;
 
     return res.status(200).send({
         message: 'User logged in successfully',
-        user,
-        token
+        user
     });
 });
 
-router.post('/check-token', async (req, res) => {
-    const { token } = req.body;
-
-    if (!token) {
+router.get('/check-session', async (req, res) => {
+    console.log(req.session);
+    if (!req.session.user) {
         return res.status(400).send({
-            message: 'Please provide a token'
+            message: 'No user is logged in'
         });
     }
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await prisma.user.findFirst({
-            where: {
-                id: decoded.id
-            }
-        });
-        return res.status(200).send({
-            message: 'Token is valid',
-            user
-        });
-    } catch (err) {
-        return res.status(400).send({
-            message: 'Invalid token'
-        });
-    }
-
+    return res.status(200).send({
+        message: 'User is logged in',
+        user: req.session.user
+    });
 });
 
 module.exports = router;
