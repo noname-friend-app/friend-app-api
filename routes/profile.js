@@ -2,7 +2,7 @@ const { Router } = require('express');
 
 const router = Router();
 const prisma = require('../utils/prisma');
-const { getUser, requireAuth } = require('../utils/auth');
+const { requireAuth } = require('../utils/auth');
 const { route } = require('./auth');
 
 router.get('/profile', requireAuth, async (req, res) => {
