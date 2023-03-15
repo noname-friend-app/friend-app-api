@@ -98,6 +98,7 @@ router.post('/login', async (req, res) => {
     // remove password from user object
     delete user.password;
     req.session.user = user;
+    // console.log(req.session.user);
 
     return res.status(200).send({
         message: 'User logged in successfully',
@@ -107,14 +108,12 @@ router.post('/login', async (req, res) => {
 
 router.get('/logout', async (req, res) => {
     req.session.destroy();
-    console.log(req.session);
     return res.status(200).send({
         message: 'User logged out successfully'
     });
 });
 
 router.get('/check-session', async (req, res) => {
-    console.log(req.session);
     if (!req.session.user) {
         return res.status(400).send({
             message: 'No user is logged in'

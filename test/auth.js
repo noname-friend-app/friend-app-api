@@ -19,7 +19,7 @@ describe('Auth', () => {
         await prisma.profile.deleteMany({})
     });
     
-    it('should create a new user on signup and return a token', async () => {
+    it('should create a new user on signup', async () => {
         const res = await chai.request(server)
             .post('/signup')
             .send({
@@ -27,12 +27,11 @@ describe('Auth', () => {
                 username: 'test',
                 password: 'test'
             })
-        // // console.log(res.body);
-        // console.log('test done');
-        // console.log('test done');
+        assert.equal(res.status, 201);
+        assert.ok(res.body.user);
     });
 
-    it('should return a token on login', async () => {
+    it('should return user on login', async () => {
         const res = await chai.request(server)
             .post('/login')
             .send({
@@ -41,7 +40,7 @@ describe('Auth', () => {
             })
 
         assert.equal(res.status, 200);
-        assert.ok(res.body.token);
+        assert.ok(res.body.user);
     });
 
     it('should allow you to use your email to login', async () => {
@@ -53,7 +52,7 @@ describe('Auth', () => {
             })
             
         assert.equal(res.status, 200);
-        assert.ok(res.body.token);
+        assert.ok(res.body.user);
     });
 
     it('should return a 401 error on login with invalid credentials', async () => {
@@ -68,7 +67,7 @@ describe('Auth', () => {
         assert.ok(res.body.message);
     });
 
-    it('should be able to check if a token is valid', async () => {
+    it('should be able to check if a session is valid', async () => {
         const res = await chai.request(server)
             .post('/login')
             .send({
@@ -77,17 +76,24 @@ describe('Auth', () => {
             })
 
         assert.equal(res.status, 200);
-        assert.ok(res.body.token);
+        assert.ok(res.body.user);
 
         const res2 = await chai.request(server)
-            .post('/check-token')
-            .send({
-                token: res.body.token
-            })
+            .get('/check-session')
+            .send({})
                 
         assert.equal(res.status, 200);
         assert.ok(res.body.message);
         assert.ok(res.body.user);
+    });
+
+    it('should be able to logout', async () => {
+        const res = await chai.request(server)
+            .get('/logout')
+            .send({})
+
+        assert.equal(res.status, 200);
+        assert.ok(res.body.message);
     });
 
     after(async () => {
