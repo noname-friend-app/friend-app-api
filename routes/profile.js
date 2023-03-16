@@ -2,10 +2,10 @@ const { Router } = require('express');
 
 const router = Router();
 const prisma = require('../utils/prisma');
-const { getUser } = require('../utils/auth');
+const { requireAuth } = require('../utils/auth');
 const { route } = require('./auth');
 
-router.get('/profile', getUser, async (req, res) => {
+router.get('/profile', requireAuth, async (req, res) => {
     const profile = await prisma.profile.findFirst({
         where: {
             userId: req.user.id
@@ -28,7 +28,7 @@ router.get('/profile', getUser, async (req, res) => {
     });
 });
 
-router.post('/profile', getUser, async (req, res) => {
+router.post('/profile', requireAuth, async (req, res) => {
     const { name, bio, pronouns, birthday } = req.body;
 
     if (!name && !bio && !pronouns && !birthday) {
@@ -65,7 +65,7 @@ router.post('/profile', getUser, async (req, res) => {
 
 });
 
-router.put('/profile', getUser, async (req, res) => {
+router.put('/profile', requireAuth, async (req, res) => {
     const { name, bio, pronouns, birthday } = req.body;
 
     if (!name && !bio && !pronouns && !birthday) {

@@ -1,7 +1,7 @@
 const express = require('express');
 
 const prisma = require('../utils/prisma');
-const { getUser } = require('../utils/auth');
+const { requireAuth } = require('../utils/auth');
 const { newGroupCode } = require('../utils/groups');
 const { route } = require('./auth');
 
@@ -21,7 +21,7 @@ const router = express.Router();
  */
 
 // create groups
-router.post('/groups/new', getUser, async (req, res) => {
+router.post('/groups/new', requireAuth, async (req, res) => {
     if (!req.body.name || !req.body.description) {
         return res.status(400).send({
             'message': 'Name and description are required'
@@ -77,7 +77,7 @@ router.post('/groups/new', getUser, async (req, res) => {
 });
 
 // get joined groups
-router.get('/groups/joined', getUser, async (req, res) => {
+router.get('/groups/joined', requireAuth, async (req, res) => {
     const groupProfiles = await prisma.groupMember.findMany({
         where: {
             userId: req.user.id
@@ -148,7 +148,7 @@ router.get('/groups/:id', async (req, res) => {
 });
 
 // join a group
-router.post('/groups/join', getUser, async (req, res) => {
+router.post('/groups/join', requireAuth, async (req, res) => {
     if (!req.body.joinCode) {
         return res.status(400).send({
             'message': 'Join code (joinCode) is required'
@@ -214,7 +214,7 @@ router.post('/groups/join', getUser, async (req, res) => {
 });
 
 // edit a group
-router.put('/groups/:id/edit', getUser, async (req, res) => {
+router.put('/groups/:id/edit', requireAuth, async (req, res) => {
     const id = req.params.id;
     
     const foundMember = await prisma.groupMember.findFirst({
@@ -262,7 +262,7 @@ router.put('/groups/:id/edit', getUser, async (req, res) => {
 });
 
 // delete a group (owner only)
-router.delete('/groups/:id/delete', getUser, async (req, res) => {
+router.delete('/groups/:id/delete', requireAuth, async (req, res) => {
     const id = req.params.id;
     
     const foundMember = await prisma.groupMember.findFirst({
