@@ -9,7 +9,8 @@
     "dev": "nodemon app.js",
     "deploy": "run-s deploy:*",
     "deploy:1": "prisma generate",
-    "deploy:2": "prisma migrate deploy"
+    "deploy:2": "prisma migrate deploy",
+    "deploy:3": "node app.js"
   },
   "keywords": [],
   "author": "",
