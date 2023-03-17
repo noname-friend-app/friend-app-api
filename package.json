@@ -6,7 +6,10 @@
   "scripts": {
     "test": "npx mocha --exit",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "deploy": "run-s deploy:*",
+    "deploy:1": "prisma generate",
+    "deploy:2": "prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
