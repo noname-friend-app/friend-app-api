@@ -7,10 +7,10 @@
     "test": "npx mocha --exit",
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "deploy": "run-s deploy:*",
-    "deploy:1": "prisma generate",
-    "deploy:2": "prisma migrate deploy",
-    "deploy:3": "node app.js"
+    "deploy": "npx run-s deploy:*",
+    "deploy:1": "npx prisma generate",
+    "deploy:2": "npx prisma migrate deploy",
+    "deploy:3": "npx node app.js"
   },
   "keywords": [],
   "author": "",
