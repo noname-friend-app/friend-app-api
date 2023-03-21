@@ -25,6 +25,20 @@ router.post('/signup', async (req, res) => {
 
     const hash = await generateHash(password);
 
+    const usernameExists = await prisma.user.findUnique({ where: {username} });
+    if (usernameExists) {
+        return res.status(400).send({
+            message: 'Username already exists'
+        });
+    }
+
+    const emailExists = await prisma.user.findUnique({ where: {email} });
+    if (emailExists) {
+        return res.status(400).send({
+            message: 'Email already exists'
+        });
+    }
+
     await prisma.user.create({
         data: {
             email,
@@ -120,9 +134,20 @@ router.get('/check-session', async (req, res) => {
         });
     }
 
+    const foundUser = await prisma.user.findFirst({
+        where: {
+            id: req.session.user.id
+        }, select: {
+            id: true,
+            email: true,
+            username: true,
+            profile: true
+        }
+    });
+
     return res.status(200).send({
         message: 'User is logged in',
-        user: req.session.user
+        user: foundUser
     });
 });
 
