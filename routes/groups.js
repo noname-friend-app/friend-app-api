@@ -32,6 +32,19 @@ router.post('/groups/new', requireAuth, async (req, res) => {
     while (await prisma.group.findFirst({ where: { joinCode: groupCode } })) {
         groupCode = newGroupCode();
     }
+
+    // see if group already exists with separate query
+    const groupExists = await prisma.group.findFirst({
+        where: {
+            name: req.body.name
+        }
+    });
+
+    if (groupExists) {
+        return res.status(400).send({
+            'message': 'Group already exists'
+        });
+    }
     
     const group = await prisma.group.create({
         data: {
