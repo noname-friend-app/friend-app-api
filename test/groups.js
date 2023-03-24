@@ -77,6 +77,20 @@ describe('Groups', () => {
 
     it('should be able to create a group', async () => {
         let resUser = await loginTestUser(1);
+
+        // create profile for user
+        const resProfile = await agent
+            .post('/profile')
+            .send({
+                name: 'alex',
+                bio: 'this is a bio',
+                pronouns: 'he/him',
+                birthday: '1999-01-01',
+            });
+
+        // verify that the profile was created
+        assert.ok(resProfile.body.profile, 'Profile was not created');
+
         const res = await agent
             .post('/groups/new')
             .send({
@@ -153,6 +167,20 @@ describe('Groups', () => {
     it('should be able to join an existing group', async () => {
         assert.ok(groupCode, 'Group code was not returned');
         let resUser = await loginTestUser(2);
+
+        // create profile for user2 
+        const resProfile = await agent
+            .post('/profile')
+            .send({
+                name: 'test2',
+                bio: 'this is a bio',
+                pronouns: 'he/him',
+                birthday: '1999-01-01',
+            });
+        
+        // verify that the profile was created
+        assert.ok(resProfile.body.profile, 'Profile was not created');
+
         const res3 = await agent
             .post('/groups/join')
             .send({
