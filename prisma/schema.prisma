@@ -36,6 +36,7 @@ model Profile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade) 
 
   groupMembers GroupMember[]
+  quotes       Quote[]
 }
 
 model Group {
@@ -49,11 +50,27 @@ model Group {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   members GroupMember[]
+  quotes  Quote[]
 }
 
 model GroupMember {
   id   String @id @default(cuid())
   role String // owner, admin, member
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  profileId String
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Quote {
+  id      String @id @default(cuid())
+  text    String
+  saidAt  DateTime
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
