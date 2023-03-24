@@ -15,8 +15,13 @@ const redisClient = redis.createClient({
 
 const app = express();
 
+var validIps = ['https://dev.doink.otterlabs.co', 'https://doink.otterlabs.co']
+if (process.env.NODE_ENV === 'development') {
+    validIps = ['http://localhost:3000']
+}
+
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: validIps,
     credentials: true
 }));
 app.use(bodyParser.json());
