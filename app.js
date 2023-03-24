@@ -35,10 +35,12 @@ app.use(morgan('dev'));
 const auth = require('./routes/auth.js');
 const profile = require('./routes/profile.js');
 const groups = require('./routes/groups.js');
+const social = require('./routes/social.js');
 
 app.use(auth);
 app.use(profile);
 app.use(groups);
+app.use(social);
 
 app.get('/', (req, res) => {
     res.send({
