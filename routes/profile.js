@@ -2,7 +2,7 @@ const { Router } = require('express');
 
 const router = Router();
 const prisma = require('../utils/prisma');
-const { requireAuth } = require('../utils/auth');
+const { requireAuth, requireAuthNoProfile } = require('../utils/auth');
 const { route } = require('./auth');
 
 router.get('/profile', requireAuth, async (req, res) => {
@@ -14,7 +14,7 @@ router.get('/profile', requireAuth, async (req, res) => {
             user: true
         }
     })
-    // console.log(profile, !profile);
+    console.log(profile, !profile);
 
     if (!profile) {
         return res.status(404).send({
@@ -28,8 +28,10 @@ router.get('/profile', requireAuth, async (req, res) => {
     });
 });
 
-router.post('/profile', requireAuth, async (req, res) => {
+router.post('/profile', requireAuthNoProfile, async (req, res) => {
     const { name, bio, pronouns, birthday } = req.body;
+    // console.log(name, bio, pronouns, birthday);
+    // console.log(req.user)
 
     if (!name && !bio && !pronouns && !birthday) {
         return res.status(400).send({

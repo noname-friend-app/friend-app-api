@@ -20,7 +20,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   profile      Profile? 
-  groupMembers GroupMember[]
 }
 
 model Profile {
@@ -35,6 +34,8 @@ model Profile {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade) 
+
+  groupMembers GroupMember[]
 }
 
 model Group {
@@ -58,7 +59,7 @@ model GroupMember {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   profileId String
-  profile   User   @relation(fields: [profileId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   groupId String
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)

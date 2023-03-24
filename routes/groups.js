@@ -63,7 +63,7 @@ router.post('/groups/new', requireAuth, async (req, res) => {
             });
         } else {
             return res.status(500).send({
-                'message': 'Internal server error'
+                'message': 'Internal server error creating group'
             });
         }
     })
@@ -71,14 +71,14 @@ router.post('/groups/new', requireAuth, async (req, res) => {
     const newMember = await prisma.groupMember.create({
         data: {
             role: 'owner',
-            userId: req.user.id,
+            profileId: req.user.profile.id,
             groupId: group.id
         }
     })
     .catch(err => {
         console.log(err);
         return res.status(500).send({
-            'message': 'Internal server error'
+            'message': 'Internal server error creating member' 
         });
     });
 
@@ -93,7 +93,7 @@ router.post('/groups/new', requireAuth, async (req, res) => {
 router.get('/groups/joined', requireAuth, async (req, res) => {
     const groupProfiles = await prisma.groupMember.findMany({
         where: {
-            userId: req.user.id
+            profileId: req.user.profile.id
         },
         include: {
             group: true
@@ -108,7 +108,8 @@ router.get('/groups/joined', requireAuth, async (req, res) => {
     return res.status(200).send({
         message: 'Groups retrieved',
         groups: groups,
-        user: req.user
+        user: req.user,
+        profile: req.user.profile
     });
 
 });
@@ -122,17 +123,18 @@ router.get('/groups/:id', async (req, res) => {
         include: {
             members: {
                 include: {
-                    user: {
+                    profile: {
                         select: {
-                            username: true,
-                            email: true,
-                            profile: {
+                            id: true,
+                            name: true,
+                            bio: true,
+                            pronouns: true,
+                            birthday: true,
+                            user: {
                                 select: {
                                     id: true,
-                                    name: true,
-                                    bio: true,
-                                    pronouns: true,
-                                    birthday: true
+                                    username: true,
+                                    email: true,
                                 }
                             }
                         },
@@ -208,7 +210,7 @@ router.post('/groups/join', requireAuth, async (req, res) => {
     const groupMember = await prisma.groupMember.create({
         data: {
             role: 'member',
-            userId: req.user.id,
+            profileId: req.user.profile.id,
             groupId: group.id
         }
     })
@@ -232,7 +234,7 @@ router.put('/groups/:id/edit', requireAuth, async (req, res) => {
     
     const foundMember = await prisma.groupMember.findFirst({
         where: {
-            userId: req.user.id,
+            profile: req.user.profile,
             groupId: id
         }
     })
@@ -280,7 +282,7 @@ router.delete('/groups/:id/delete', requireAuth, async (req, res) => {
     
     const foundMember = await prisma.groupMember.findFirst({
         where: {
-            userId: req.user.id,
+            profileId: req.user.profileId,
             groupId: id
         }
     })
