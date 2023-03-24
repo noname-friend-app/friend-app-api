@@ -192,7 +192,7 @@ router.post('/groups/join', requireAuth, async (req, res) => {
 
     const foundMember = await prisma.groupMember.findFirst({
         where: {
-            userId: req.user.id,
+            profileId: req.user.profile.id,
             groupId: group.id
         }
     });
