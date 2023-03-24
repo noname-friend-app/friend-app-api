@@ -7,5 +7,6 @@ A social network for friends to keep track of their finances, share their experi
 
 ## Environment Variables
 - `DATABASE_URL`: The URL of the database to connect to.
+- `REDIS_URL`: The URL of the redis server to connect to.
 - `SECRET_SESSION`: The secret used to sign the session cookie.
 - `PORT`: The port to listen on (Optional).

@@ -2,9 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan'); //Logger for requests
-const session = require('express-session');
-
 require('dotenv').config();
+
+const session = require("express-session");
+const connectRedis = require("connect-redis");
+const redis = require("redis");
+
+const RedisStore = connectRedis(session);
+const redisClient = redis.createClient({
+    url: process.env.REDIS_URL
+});
 
 const app = express();
 
@@ -13,7 +20,9 @@ app.use(cors({
     credentials: true
 }));
 app.use(bodyParser.json());
+
 app.use(session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
