@@ -10,6 +10,11 @@ const { should, expect } = chai;
 
 chai.use(chaiHttp);
 
+// Agent for testing everything
+// We need to use agent with cookies/sessions to test authentication
+// without it, the sessions will not be saved between requests
+const agent = chai.request.agent(server);
+
 describe('Profiles', () => {
     before(async () => {
         // delete all the users
@@ -26,26 +31,8 @@ describe('Profiles', () => {
             });
 
         // verify that the user was created
-        // console.log(res.body, res.status);
         assert.equal(res.status, 201, 'User was not created');
-        assert.ok(res.body.token, 'User was not created');
-    });
-
-    var authtoken = '';
-
-    beforeEach(async () => {
-        const res = await chai.request(server)
-            .post('/login')
-            .send({
-                username: 'test',
-                password: 'test'
-            });
-
-        // verify that the token was returned
-        assert.equal(res.status, 200, 'Token was not returned');
-        assert.ok(res.body.token, 'Token was not returned');
-
-        authtoken = res.body.token;
+        assert.ok(res.body.user, 'User was not created');
     });
 
     // test authentication
@@ -54,13 +41,19 @@ describe('Profiles', () => {
             .get('/profile');
 
         assert.equal(res.status, 401);
-        assert.equal(res.body.message, 'No token provided, set authtoken header');
     });
 
     it('should create a profile', async () => {
-        const res = await chai.request(server)
+        // login the user
+        const resUser = await agent
+            .post('/login')
+            .send({
+                username: 'test',
+                password: 'test'
+            });
+
+        const res = await agent
             .post('/profile')
-            .set('authToken', authtoken)
             .send({
                 name: 'alex',
                 bio: 'this is a bio',
@@ -77,9 +70,16 @@ describe('Profiles', () => {
     });
 
     it('should get a profile', async () => {
-        const res = await chai.request(server)
+        // login the user
+        const resUser = await agent
+            .post('/login')
+            .send({
+                username: 'test',
+                password: 'test'
+            });
+
+        const res = await agent
             .get('/profile')
-            .set('authToken', authtoken);
 
         expect(res.status).to.equal(200);
         expect(res.body.message).to.equal('Profile found');
@@ -90,9 +90,16 @@ describe('Profiles', () => {
     });
 
     it('should update a profile', async () => {
-        const res = await chai.request(server)
+        // login the user
+        const resUser = await agent
+            .post('/login')
+            .send({
+                username: 'test',
+                password: 'test'
+            });
+
+        const res = await agent
             .put('/profile')
-            .set('authToken', authtoken)
             .send({
                 name: 'test',
                 bio: 'test',

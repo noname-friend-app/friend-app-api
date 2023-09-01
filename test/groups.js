@@ -40,47 +40,59 @@ describe('Groups', () => {
         // verify that the user was created
         // console.log(res.body, res.status);
         assert.equal(res.status, 201, 'User was not created');
-        assert.ok(res.body.token, 'User was not created');
+        assert.ok(res.body.user, 'User was not created');
         
         assert.equal(res2.status, 201, 'User2 was not created');
-        assert.ok(res2.body.token, 'User2 was not created');
+        assert.ok(res2.body.user, 'User2 was not created');
     });
 
-    var authtoken = '';
-    var authtoken2 = '';
+    // Agent for testing everything
+    // We need to use agent with cookies/sessions to test authentication
+    // without it, the sessions will not be saved between requests
+    const agent = chai.request.agent(server);
 
-    beforeEach(async () => {
-        const res = await chai.request(server)
-            .post('/login')
-            .send({
+    const loginTestUser = async (userNumber) => {
+        const data = {
+            1: {
                 username: 'test',
                 password: 'test'
-            });
-
-        // verify that the token was returned
-        assert.equal(res.status, 200, 'Token was not returned');
-        assert.ok(res.body.token, 'Token was not returned');
-
-        authtoken = res.body.token;
-
-        const res2 = await chai.request(server)
-            .post('/login')
-            .send({
+            },
+            2: {
                 username: 'test2',
                 password: 'test'
+            }
+        }
+
+        const res = await agent
+            .post('/login')
+            .send({
+                username: data[userNumber].username,
+                password: data[userNumber].password
             });
 
-        // verify that the token was returned
-        assert.equal(res2.status, 200, 'Token was not returned');
-        assert.ok(res2.body.token, 'Token was not returned');
-
-        authtoken2 = res2.body.token;
-    });
+        assert.equal(res.status, 200, 'User not logged in');
+        assert.ok(res.body.user, 'User not logged in');
+        return res;
+    }
 
     it('should be able to create a group', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+
+        // create profile for user
+        const resProfile = await agent
+            .post('/profile')
+            .send({
+                name: 'alex',
+                bio: 'this is a bio',
+                pronouns: 'he/him',
+                birthday: '1999-01-01',
+            });
+
+        // verify that the profile was created
+        assert.ok(resProfile.body.profile, 'Profile was not created');
+
+        const res = await agent
             .post('/groups/new')
-            .set('authToken', authtoken)
             .send({
                 name: 'Test Group',
                 description: 'This is a test group'
@@ -92,9 +104,9 @@ describe('Groups', () => {
     });
 
     it('should be able to get all groups', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res = await agent
             .get('/groups/joined')
-            .set('authToken', authtoken);
 
         // verify that a list of groups was returned
         assert.equal(res.status, 200, 'Groups were not returned');
@@ -105,9 +117,9 @@ describe('Groups', () => {
     var groupCode = '';
 
     it('should be able to get a group by id', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res = await agent
             .get('/groups/joined')
-            .set('authToken', authtoken);
         
         // verify that a list of groups was returned
         assert.equal(res.status, 200, 'Groups were not returned');
@@ -119,7 +131,7 @@ describe('Groups', () => {
 
         groupCode = group.joinCode;
         
-        const res2 = await chai.request(server)
+        const res2 = await agent
             .get(`/groups/${group.id}`)
         
         // verify that the group was returned
@@ -130,9 +142,9 @@ describe('Groups', () => {
     });
 
     it('should get an error joining a group with no join code', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res = await agent
             .post('/groups/join')
-            .set('authToken', authtoken2)
             .send({
                 message: 'test'
             });
@@ -141,9 +153,9 @@ describe('Groups', () => {
     })
 
     it('should return an error when joining with a bad joinCode', async () => {
-        const res2 = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res2 = await agent
             .post('/groups/join')
-            .set('authToken', authtoken2)
             .send({
                 joinCode: 'fakecode'
             });
@@ -154,10 +166,23 @@ describe('Groups', () => {
 
     it('should be able to join an existing group', async () => {
         assert.ok(groupCode, 'Group code was not returned');
+        let resUser = await loginTestUser(2);
+
+        // create profile for user2 
+        const resProfile = await agent
+            .post('/profile')
+            .send({
+                name: 'test2',
+                bio: 'this is a bio',
+                pronouns: 'he/him',
+                birthday: '1999-01-01',
+            });
         
-        const res3 = await chai.request(server)
+        // verify that the profile was created
+        assert.ok(resProfile.body.profile, 'Profile was not created');
+
+        const res3 = await agent
             .post('/groups/join')
-            .set('authToken', authtoken2)
             .send({
                 joinCode: groupCode
             });
@@ -168,9 +193,9 @@ describe('Groups', () => {
     })
 
     it('should not be able to join a group that was already joined', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(2);
+        const res = await agent
             .post('/groups/join')
-            .set('authToken', authtoken2)
             .send({
                 joinCode: groupCode
             });
@@ -179,9 +204,9 @@ describe('Groups', () => {
     })
 
     it('should be able to edit existing group', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res = await agent
             .get('/groups/joined')
-            .set('authToken', authtoken);
         
         // verify that a list of groups was returned
         assert.equal(res.status, 200, 'Groups were not returned');
@@ -193,9 +218,8 @@ describe('Groups', () => {
         assert.equal(group.name, 'Test Group', 'Group was not created');
         assert.equal(group.description, 'This is a test group', 'Group was not created');
 
-        const res2 = await chai.request(server)
+        const res2 = await agent
             .put(`/groups/${group.id}/edit`)
-            .set('authToken', authtoken)
             .send({
                 name: 'Test Group 2',
                 description: 'This is a test group 2'
@@ -210,9 +234,9 @@ describe('Groups', () => {
     });
 
     it('should be able to delete existing group', async () => {
-        const res = await chai.request(server)
+        let resUser = await loginTestUser(1);
+        const res = await agent
             .get('/groups/joined')
-            .set('authToken', authtoken);
         
         // verify that a list of groups was returned
         assert.equal(res.status, 200, 'Groups were not returned');
@@ -222,9 +246,8 @@ describe('Groups', () => {
         const group = res.body.groups[0];
         assert.ok(group, 'Group was not returned');
 
-        const res2 = await chai.request(server)
+        const res2 = await agent
             .delete(`/groups/${group.id}/delete`)
-            .set('authToken', authtoken);
 
         // verify that the group was deleted
         assert.equal(res2.status, 200, 'Group was not deleted');
