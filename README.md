@@ -6,23 +6,30 @@ Doink is the ultimate app for friend groups looking to strengthen their bonds an
 
 ## Config ##
 
-### Environment Variables ###
-> **DATABASE_URL**: URL to Postgres database  
-> **REDIS_URL**: URL to redis database  
-> **SESSION_SECRET**: random session string for session encryption  
-> **PORT**: port to be served on
+### Environment Variables
+- `DATABASE_URL`: The URL of the database to connect to.
+- `REDIS_URL`: The URL of the Redis server to connect to.
+- `SECRET_SESSION`: The secret used to sign the session cookie.
+- `PORT`: The port to listen on (Optional).
+
+### Installation ###
+```
+npm install
+```
+
+### Migrate Database
+Before running the app make sure that the DB is up to date
+```
+npx prisma generate
+npx prisma migrate deploy
+```
 
 ### Run Server
 ```
-npm install
 npm start
 ```
  
 # External Links
 - Frontend [Repo](https://github.com/noname-friend-app/friend-app-client)
-
-## Environment Variables
-- `DATABASE_URL`: The URL of the database to connect to.
-- `REDIS_URL`: The URL of the redis server to connect to.
-- `SECRET_SESSION`: The secret used to sign the session cookie.
-- `PORT`: The port to listen on (Optional).
+- Live API: [doink.otterlabs.co/login](https://doink.otterlabs.co)
+- Live Dev API: [dev.doink.otterlabs.co/](https://dev.doink.otterlabs.co/)
