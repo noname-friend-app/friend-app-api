@@ -11,6 +11,7 @@ Doink is the ultimate app for friend groups looking to strengthen their bonds an
 - `REDIS_URL`: The URL of the Redis server to connect to.
 - `SECRET_SESSION`: The secret used to sign the session cookie.
 - `PORT`: The port to listen on (Optional).
+- `NODE_ENV`: **production** by default, set to **development** when working locally.
 
 ### Installation ###
 ```
