@@ -23,6 +23,21 @@ router.get('/group/:groupId/quotes', requireAuth, async (req, res) => {
                                 }
                             }
                         }
+                    },
+                    comments: {
+                        include: {
+                            profile: {
+                                include: {
+                                    user: {
+                                        select: {
+                                            id: true,
+                                            username: true,
+                                            email: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     }
                 }
             }
@@ -86,7 +101,20 @@ router.post('/group/:groupId/quotes', requireAuth, async (req, res) => {
 // Comments
 
 router.get('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, res) => {
-    const quoteId = req.params.quoteId;
+    const {groupId, quoteId} = req.params;
+
+    const group = await prisma.group.findFirst({
+        where: {
+            id: groupId
+        }
+    });
+
+    if (!group) {
+        return res.status(404).send({
+            message: 'Group not found'
+        });
+    }
+
     const quote = await prisma.quote.findFirst({
         where: {
             id: quoteId
@@ -99,7 +127,7 @@ router.get('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, r
         });
     }
 
-    const comments = await prisma.comment.findMany({
+    const comments = await prisma.quoteComments.findMany({
         where: {
             quoteId
         },
@@ -117,16 +145,28 @@ router.get('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, r
             }
         }
     });
-
-    return {
+    
+    return res.status(200).send({
         quote: quote,
         comments: comments
-    }
+    });
 });
 
 router.post('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, res) => {
-    const quoteId = req.params.quoteId;
+    const {groupId, quoteId} = req.params;
     const { text } = req.body;
+
+    const group = await prisma.group.findFirst({
+        where: {
+            id: groupId
+        }
+    });
+
+    if (!group) {
+        return res.status(404).send({
+            message: 'Group not found'
+        });
+    }
 
     if (!text) {
         return res.status(400).send({
@@ -146,7 +186,7 @@ router.post('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, 
         });
     }
 
-    const comment = await prisma.comment.create({
+    const comment = await prisma.quoteComments.create({
         data: {
             text,
             quoteId,
@@ -183,7 +223,7 @@ router.put('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth, as
         });
     }
 
-    const comment = await prisma.comment.findFirst({
+    const comment = await prisma.quoteComments.findFirst({
         where: {
             id: commentId
         }
@@ -195,7 +235,7 @@ router.put('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth, as
         });
     }
 
-    const updatedComment = await prisma.comment.update({
+    const updatedComment = await prisma.quoteComments.update({
         where: {
             id: commentId
         },
@@ -226,7 +266,7 @@ router.delete('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth,
         });
     }
 
-    const comment = await prisma.comment.findFirst({
+    const comment = await prisma.quoteComments.findFirst({
         where: {
             id: commentId
         }
@@ -238,7 +278,7 @@ router.delete('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth,
         });
     }
 
-    await prisma.comment.delete({
+    await prisma.quoteComments.delete({
         where: {
             id: commentId
         }
