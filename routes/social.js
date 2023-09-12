@@ -100,7 +100,7 @@ router.post('/group/:groupId/quotes', requireAuth, async (req, res) => {
 
 // Comments
 
-router.get('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, res) => {
+router.get('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req, res) => {
     const {groupId, quoteId} = req.params;
 
     const group = await prisma.group.findFirst({
@@ -152,7 +152,7 @@ router.get('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, r
     });
 });
 
-router.post('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, res) => {
+router.post('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req, res) => {
     const {groupId, quoteId} = req.params;
     const { text } = req.body;
 
@@ -200,7 +200,7 @@ router.post('/group/:groupId/quote/:quoteId/comments', requireAuth, async (req, 
     });
 });
 
-router.put('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth, async (req, res) => {
+router.put('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth, async (req, res) => {
     const quoteId = req.params.quoteId;
     const commentId = req.params.commentId;
     const { text } = req.body;
@@ -250,7 +250,7 @@ router.put('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth, as
     });
 });
 
-router.delete('/group/:groupId/quote/:quoteId/comments/:commentId', requireAuth, async (req, res) => {
+router.delete('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth, async (req, res) => {
     const quoteId = req.params.quoteId;
     const commentId = req.params.commentId;
 
