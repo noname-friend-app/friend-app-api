@@ -9,7 +9,7 @@ Doink is the ultimate app for friend groups looking to strengthen their bonds an
 ### Environment Variables
 - `DATABASE_URL`: The URL of the database to connect to.
 - `REDIS_URL`: The URL of the Redis server to connect to.
-- `SECRET_SESSION`: The secret used to sign the session cookie.
+- `SESSION_SECRET`: The secret used to sign the session cookie.
 - `PORT`: The port to listen on (Optional).
 - `NODE_ENV`: **production** by default, set to **development** when working locally.
 
