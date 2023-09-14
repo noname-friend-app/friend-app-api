@@ -29,6 +29,11 @@ npx prisma migrate deploy
 ```
 npm start
 ```
+
+### Using Docker-Compose
+```
+docker-compose up
+```
  
 # External Links
 - Frontend [Repo](https://github.com/noname-friend-app/friend-app-client)
