@@ -41,11 +41,13 @@ const auth = require('./routes/auth.js');
 const profile = require('./routes/profile.js');
 const groups = require('./routes/groups.js');
 const social = require('./routes/social.js');
+const lists = require('./routes/lists.js');
 
 app.use(auth);
 app.use(profile);
 app.use(groups);
 app.use(social);
+app.use(lists);
 
 app.get('/', (req, res) => {
     res.send({

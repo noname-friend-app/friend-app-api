@@ -71,7 +71,7 @@ const requireAuth = async (req, res, next) => {
         });
     }
 
-    if (req.path === '/profile' && req.method === 'POST' && !user.profile) {
+    if (req.path === '/profile' && req.method === 'POST' || !user.profile) {
         return res.status(401).send({
             message: 'Please create a profile'
         });
