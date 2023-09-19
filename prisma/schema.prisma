@@ -38,6 +38,7 @@ model Profile {
   groupMembers GroupMember[]
   quotes       Quote[]
   comments     QuoteComments[]
+  lists        List[]
 }
 
 model Group {
@@ -52,6 +53,7 @@ model Group {
 
   members GroupMember[]
   quotes  Quote[]
+  lists   List[]
 }
 
 model GroupMember {
@@ -97,4 +99,34 @@ model QuoteComments {
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+// Lists
+
+model List {
+  id     String @id @default(cuid())
+  name   String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  profileId String
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  listItems ListItem[]
+}
+
+model ListItem {
+  id    String @id @default(cuid())
+  text  String
+  checked Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  listId String
+  list   List   @relation(fields: [listId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

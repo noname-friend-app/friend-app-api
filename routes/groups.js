@@ -67,7 +67,7 @@ router.post('/groups/new', requireAuth, async (req, res) => {
             });
         }
     })
-    console.log("meh");
+    
     const newMember = await prisma.groupMember.create({
         data: {
             role: 'owner',
