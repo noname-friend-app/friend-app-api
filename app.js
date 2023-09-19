@@ -56,7 +56,9 @@ app.get('/', (req, res) => {
         routes: [
             '/auth',
             '/profile',
-            '/groups'
+            '/groups',
+            '/social',
+            '/lists'
         ]
     });
 });
