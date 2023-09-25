@@ -3,6 +3,7 @@ const { requireAuth } = require('../utils/auth');
 
 const router = express.Router();
 const prisma = require('../utils/prisma');
+const { route } = require('./auth');
 
 // extra auth middleware to check if user is in group
 
@@ -27,7 +28,7 @@ const checkForGroup = async (req, res, next) => {
         });
     }
 
-    console.log(group);
+    // console.log(group);
 
     // check if user is in group
     const userInGroup = group.members.find(member => member.profile.id === req.user.profile.id);
@@ -241,5 +242,43 @@ router.put('/list/:listId/item/:itemId/complete', requireAuth, async (req, res) 
     });
 });
 
+// toggle list complete
+router.put('/list/:listId/complete', requireAuth, async (req, res) => {
+    const { listId } = req.params;
+    const { checked } = req.body;
+
+    if (!checked) {
+        return res.status(400).send({
+            message: "please provide checked (true or false)"
+        })
+    }
+
+    const list = await prisma.list.findFirst({
+        where: {
+            id: listId
+        }
+    });
+
+    if (!list) {
+        return res.status(404).send({
+            message: "list not found"
+        })
+    }
+
+    const changedList = await prisma.list.update({
+        where: {
+            id: listId
+        },
+        data: {
+            checked: checked
+        }
+    });
+
+    return res.status(200).send({
+        message: "list updated",
+        list: changedList
+    });
+
+});
 
 module.exports = router;
