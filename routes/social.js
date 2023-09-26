@@ -110,6 +110,7 @@ router.get('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req, 
     });
 
     if (!group) {
+        console.log('group not found');
         return res.status(404).send({
             message: 'Group not found'
         });
@@ -122,6 +123,7 @@ router.get('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req, 
     });
 
     if (!quote) {
+        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });
@@ -163,6 +165,7 @@ router.post('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req,
     });
 
     if (!group) {
+        console.log('group not found');
         return res.status(404).send({
             message: 'Group not found'
         });
@@ -181,6 +184,7 @@ router.post('/group/:groupId/quotes/:quoteId/comments', requireAuth, async (req,
     });
 
     if (!quote) {
+        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });
@@ -218,6 +222,7 @@ router.put('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth, a
     });
 
     if (!quote) {
+        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });
@@ -230,6 +235,7 @@ router.put('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth, a
     });
 
     if (!comment) {
+        console.log('comment not found');
         return res.status(404).send({
             message: 'Comment not found'
         });
@@ -261,6 +267,7 @@ router.delete('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth
     });
 
     if (!quote) {
+        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });
@@ -273,6 +280,7 @@ router.delete('/group/:groupId/quotes/:quoteId/comments/:commentId', requireAuth
     });
 
     if (!comment) {
+        console.log('comment not found');
         return res.status(404).send({
             message: 'Comment not found'
         });
