@@ -2,7 +2,7 @@
 services:
   web:
     build: .
-    command: npm run railway
+    command: npm run deploy
     depends_on:
       - db
       - redis
