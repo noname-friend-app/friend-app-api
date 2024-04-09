@@ -27,12 +27,12 @@ router.post('/groups/new', requireAuth, async (req, res) => {
             'message': 'Name and description are required'
         });
     }
-
+    
     let groupCode = newGroupCode();
     while (await prisma.group.findFirst({ where: { joinCode: groupCode } })) {
         groupCode = newGroupCode();
     }
-
+    
     // see if group already exists with separate query
     const groupExists = await prisma.group.findFirst({
         where: {
@@ -67,7 +67,7 @@ router.post('/groups/new', requireAuth, async (req, res) => {
             });
         }
     })
-
+    
     const newMember = await prisma.groupMember.create({
         data: {
             role: 'owner',
@@ -81,7 +81,7 @@ router.post('/groups/new', requireAuth, async (req, res) => {
             'message': 'Internal server error creating member' 
         });
     });
-
+    console.log("meh");
     return res.status(200).send({
         'message': 'Group created',
         'group': group,
