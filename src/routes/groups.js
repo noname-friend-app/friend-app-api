@@ -1,7 +1,7 @@
 const express = require('express');
 
 const prisma = require('../utils/prisma');
-const { requireAuth } = require('../utils/auth');
+const { requireAuth } = require('../middleware/auth');
 const { newGroupCode } = require('../utils/groups');
 const { route } = require('./auth');
 

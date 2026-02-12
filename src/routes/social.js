@@ -2,7 +2,7 @@ const { Router } = require('express');
 
 const router = Router();
 const prisma = require('../utils/prisma');
-const { requireAuth, requireAuthNoProfile } = require('../utils/auth');
+const { requireAuth, requireAuthNoProfile } = require('../middleware/auth');
 
 router.get('/group/:groupId/quotes', requireAuth, async (req, res) => {
     const groupId = req.params.groupId;

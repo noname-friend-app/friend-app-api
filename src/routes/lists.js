@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuth } = require('../utils/auth');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 const prisma = require('../utils/prisma');

@@ -2,8 +2,7 @@ const { Router } = require('express');
 
 const router = Router();
 const prisma = require('../utils/prisma');
-const { requireAuth, requireAuthNoProfile } = require('../utils/auth');
-const { route } = require('./auth');
+const { requireAuth, requireAuthNoProfile } = require('../middleware/auth');
 
 router.get('/profile', requireAuth, async (req, res) => {
     const profile = await prisma.profile.findFirst({
