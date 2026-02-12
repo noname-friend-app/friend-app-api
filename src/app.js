@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const morgan = require('morgan'); //Logger for requests
+const logger = require('./utils/logger');
+const { httpLogger } = require('./utils/logger');
 require('dotenv').config();
 
 const session = require("express-session");
@@ -33,9 +34,8 @@ app.use(session({
     saveUninitialized: true,
 }));
 
-app.use(morgan('dev')); 
-
 app.use(express.static('static'));
+app.use(httpLogger);
 
 // custom middlware
 
@@ -67,7 +67,7 @@ app.get('/', (req, res) => {
 
 const port = process.env.PORT || 80;
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    logger.info(`Server is running on port ${port}`);
 });
 
 module.exports = app;
