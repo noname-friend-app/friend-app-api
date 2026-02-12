@@ -37,19 +37,20 @@ const changePassword = async (req, res) => {
 
     const hash = await generateHash(newPassword);
 
-    await prisma.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            password: hash
-        }
-    })
-    .catch(err => {
+    try {
+        await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                password: hash
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             message: 'Error changing password'
         });
-    });
+    }
 
     return res.status(200).send({
         message: 'Password changed successfully'

@@ -3,17 +3,19 @@ const prisma = require('../../utils/prisma');
 const deleteGroup = async (req, res) => {
     const id = req.params.id;
     
-    const foundMember = await prisma.groupMember.findFirst({
-        where: {
-            profileId: req.user.profileId,
-            groupId: id
-        }
-    })
-    .catch(err => {
+    let foundMember;
+    try {
+        foundMember = await prisma.groupMember.findFirst({
+            where: {
+                profileId: req.user.profileId,
+                groupId: id
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             'message': 'Internal server error'
         });
-    });
+    }
 
     if (!foundMember) {
         return res.status(404).send({
@@ -27,16 +29,18 @@ const deleteGroup = async (req, res) => {
         });
     }
 
-    const group = await prisma.group.delete({
-        where: {
-            id: id
-        }
-    })
-    .catch(err => {
+    let group;
+    try {
+        group = await prisma.group.delete({
+            where: {
+                id: id
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             'message': 'Internal server error'
         });
-    });
+    }
 
     return res.status(200).send({
         'message': 'Group deleted',

@@ -11,22 +11,24 @@ const updateProfile = async (req, res) => {
 
     let dateBirthday = new Date(birthday);
 
-    const profile = await prisma.profile.update({
-        where: {
-            userId: req.user.id
-        },
-        data: {
-            name,
-            bio,
-            pronouns,
-            birthday: dateBirthday
-        }
-    })
-    .catch(err => {
+    let profile;
+    try {
+        profile = await prisma.profile.update({
+            where: {
+                userId: req.user.id
+            },
+            data: {
+                name,
+                bio,
+                pronouns,
+                birthday: dateBirthday
+            }
+        });
+    } catch (err) {
         return res.status(400).send({
             message: 'Error updating profile'
         });
-    });
+    }
 
     return res.status(200).send({
         message: 'Profile updated successfully',

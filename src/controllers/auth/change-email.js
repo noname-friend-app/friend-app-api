@@ -34,30 +34,31 @@ const changeEmail = async (req, res) => {
         });
     }
 
-    await prisma.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            email: email
-        },
-        select: {
-            id: true,
-            email: true,
-            username: true,
-            profile: true
-        }
-    })
-    .then(user => {
-        return res.status(200).send({
-            message: 'Email changed successfully',
-            user
+    let updatedUser;
+    try {
+        updatedUser = await prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                email: email
+            },
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                profile: true
+            }
         });
-    })
-    .catch(err => {
+    } catch (err) {
         return res.status(500).send({
             message: 'Error changing email'
         });
+    }
+
+    return res.status(200).send({
+        message: 'Email changed successfully',
+        user: updatedUser
     });
 };
 

@@ -7,16 +7,18 @@ const joinGroup = async (req, res) => {
         });
     }
 
-    const group = await prisma.group.findFirst({
-        where: {
-            joinCode: req.body.joinCode
-        }
-    })
-    .catch(err => {
+    let group;
+    try {
+        group = await prisma.group.findFirst({
+            where: {
+                joinCode: req.body.joinCode
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             'message': 'Internal server error'
         });
-    });
+    }
 
     if (!group) {
         return res.status(404).send({
@@ -38,18 +40,20 @@ const joinGroup = async (req, res) => {
         });
     }
 
-    const groupMember = await prisma.groupMember.create({
-        data: {
-            role: 'member',
-            profileId: req.user.profile.id,
-            groupId: group.id
-        }
-    })
-    .catch(err => {
+    let groupMember;
+    try {
+        groupMember = await prisma.groupMember.create({
+            data: {
+                role: 'member',
+                profileId: req.user.profile.id,
+                groupId: group.id
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             'message': 'Internal server error'
         });
-    });
+    }
 
     return res.status(200).send({
         'message': 'Group joined',

@@ -11,23 +11,25 @@ const createProfile = async (req, res) => {
 
     let dateBirthday = new Date(birthday);
 
-    const profile = await prisma.profile.create({
-        data: {
-            name,
-            bio,
-            pronouns,
-            birthday: dateBirthday,
-            userId: req.user.id
-        },
-        include: {
-            user: true
-        }
-    })
-    .catch(err => {
+    let profile;
+    try {
+        profile = await prisma.profile.create({
+            data: {
+                name,
+                bio,
+                pronouns,
+                birthday: dateBirthday,
+                userId: req.user.id
+            },
+            include: {
+                user: true
+            }
+        });
+    } catch (err) {
         return res.status(400).send({
             message: 'Error creating profile'
         });
-    });
+    }
 
     return res.status(201).send({
         message: 'Profile created successfully',

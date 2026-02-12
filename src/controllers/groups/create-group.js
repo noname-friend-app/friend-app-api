@@ -26,15 +26,17 @@ const createGroup = async (req, res) => {
         });
     }
     
-    const group = await prisma.group.create({
-        data: {
-            name: req.body.name,
-            description: req.body.description,
-            joinCode: groupCode,
-            groupImageUrl: req.body.groupImageUrl
-        }
-    })
-    .catch(err => {
+    let group;
+    try {
+        group = await prisma.group.create({
+            data: {
+                name: req.body.name,
+                description: req.body.description,
+                joinCode: groupCode,
+                groupImageUrl: req.body.groupImageUrl
+            }
+        });
+    } catch (err) {
         // if it is a PrismaClientKnownRequestError, then the group already exists
         if (err.name === 'PrismaClientKnownRequestError') {
             return res.status(400).send({
@@ -45,20 +47,22 @@ const createGroup = async (req, res) => {
                 'message': 'Internal server error creating group'
             });
         }
-    });
+    }
     
-    const newMember = await prisma.groupMember.create({
-        data: {
-            role: 'owner',
-            profileId: req.user.profile.id,
-            groupId: group.id
-        }
-    })
-    .catch(err => {
+    let newMember;
+    try {
+        newMember = await prisma.groupMember.create({
+            data: {
+                role: 'owner',
+                profileId: req.user.profile.id,
+                groupId: group.id
+            }
+        });
+    } catch (err) {
         return res.status(500).send({
             'message': 'Internal server error creating member' 
         });
-    });
+    }
 
     return res.status(200).send({
         'message': 'Group created',

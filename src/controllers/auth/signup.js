@@ -26,28 +26,29 @@ const signup = async (req, res) => {
         });
     }
 
-    await prisma.user.create({
-        data: {
-            email,
-            username,
-            password: hash
-        }, select: {
-            id: true,
-            email: true,
-            username: true
-        }
-    })
-    .then(user => {
-        req.session.user = user;
-        return res.status(201).send({
-            message: 'User created successfully',
-            user
+    let user;
+    try {
+        user = await prisma.user.create({
+            data: {
+                email,
+                username,
+                password: hash
+            }, select: {
+                id: true,
+                email: true,
+                username: true
+            }
         });
-    })
-    .catch(err => {
+    } catch (err) {
         return res.status(400).send({
             message: 'Email or username already exists'
         });
+    }
+
+    req.session.user = user;
+    return res.status(201).send({
+        message: 'User created successfully',
+        user
     });
 };
 
