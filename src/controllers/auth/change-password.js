@@ -17,8 +17,7 @@ const changePassword = async (req, res) => {
             id: true,
             email: true,
             username: true,
-            password: true,
-            profile: true
+            password: true
         }
     });
 
@@ -47,15 +46,13 @@ const changePassword = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log('Error changing password: ', err);
         return res.status(500).send({
             message: 'Error changing password'
         });
     });
 
     return res.status(200).send({
-        message: 'Password changed successfully',
-        user
+        message: 'Password changed successfully'
     });
 };
 

@@ -10,7 +10,6 @@ const editGroup = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log(err);
         return res.status(500).send({
             'message': 'Internal server error'
         });
@@ -35,7 +34,6 @@ const editGroup = async (req, res) => {
         data: req.body
     })
     .catch(err => {
-        console.log(err);
         return res.status(500).send({
             'message': 'Internal server error'
         });

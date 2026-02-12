@@ -11,7 +11,6 @@ const createComment = async (req, res) => {
     });
 
     if (!group) {
-        console.log('group not found');
         return res.status(404).send({
             message: 'Group not found'
         });
@@ -30,7 +29,6 @@ const createComment = async (req, res) => {
     });
 
     if (!quote) {
-        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });

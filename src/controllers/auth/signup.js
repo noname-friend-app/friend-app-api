@@ -45,7 +45,6 @@ const signup = async (req, res) => {
         });
     })
     .catch(err => {
-        console.log('Error creating user: ', err);
         return res.status(400).send({
             message: 'Email or username already exists'
         });

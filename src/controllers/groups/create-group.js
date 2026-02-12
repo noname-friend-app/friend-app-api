@@ -35,7 +35,6 @@ const createGroup = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log(err);
         // if it is a PrismaClientKnownRequestError, then the group already exists
         if (err.name === 'PrismaClientKnownRequestError') {
             return res.status(400).send({
@@ -56,12 +55,11 @@ const createGroup = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log(err);
         return res.status(500).send({
             'message': 'Internal server error creating member' 
         });
     });
-    console.log("meh");
+
     return res.status(200).send({
         'message': 'Group created',
         'group': group,

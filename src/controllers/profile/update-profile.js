@@ -23,7 +23,6 @@ const updateProfile = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log('Error updating profile: ', err);
         return res.status(400).send({
             message: 'Error updating profile'
         });

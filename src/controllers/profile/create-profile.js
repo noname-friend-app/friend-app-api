@@ -24,7 +24,6 @@ const createProfile = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log('Error creating profile: ', err);
         return res.status(400).send({
             message: 'Error creating profile'
         });

@@ -55,7 +55,6 @@ const changeEmail = async (req, res) => {
         });
     })
     .catch(err => {
-        console.log('Error changing email: ', err);
         return res.status(500).send({
             message: 'Error changing email'
         });

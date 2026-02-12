@@ -10,7 +10,6 @@ const deleteGroup = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log(err);
         return res.status(500).send({
             'message': 'Internal server error'
         });
@@ -34,7 +33,6 @@ const deleteGroup = async (req, res) => {
         }
     })
     .catch(err => {
-        console.log(err);
         return res.status(500).send({
             'message': 'Internal server error'
         });

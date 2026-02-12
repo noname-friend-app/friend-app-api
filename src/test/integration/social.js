@@ -38,7 +38,6 @@ describe('Social', function() {
         // verify that the user was created
         assert.equal(res.status, 201, 'User was not created');
         assert.ok(res.body.user, 'User was not created');
-        console.log(res.body.user)
         
         // check-session
         const resSession = await agent
@@ -57,7 +56,6 @@ describe('Social', function() {
                 birthday: new Date()
             });
         
-        console.log(resProfile.body)
         assert.equal(resProfile.status, 201, 'Profile was not created');
         assert.ok(resProfile.body.profile, 'Profile was not created');
         

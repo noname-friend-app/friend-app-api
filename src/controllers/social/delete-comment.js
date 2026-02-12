@@ -11,7 +11,6 @@ const deleteComment = async (req, res) => {
     });
 
     if (!quote) {
-        console.log('quote not found');
         return res.status(404).send({
             message: 'Quote not found'
         });
@@ -24,7 +23,6 @@ const deleteComment = async (req, res) => {
     });
 
     if (!comment) {
-        console.log('comment not found');
         return res.status(404).send({
             message: 'Comment not found'
         });
