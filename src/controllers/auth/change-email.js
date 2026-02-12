@@ -28,7 +28,7 @@ const changeEmail = async (req, res) => {
     }
 
     const emailExists = await prisma.user.findUnique({ where: {email} });
-    if (emailExists != req.user.email) {
+    if (emailExists && emailExists.id !== user.id) {
         return res.status(400).send({
             message: 'Email already exists on another account'
         });

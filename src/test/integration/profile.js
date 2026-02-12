@@ -1,8 +1,8 @@
-const server = require('../app');
+const server = require('../../app');
 const mocha = require('mocha');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const prisma = require('../utils/prisma');
+const prisma = require('../../utils/prisma');
 const { assert } = require('chai');
 
 const { describe, it, after } = mocha;
@@ -10,12 +10,17 @@ const { should, expect } = chai;
 
 chai.use(chaiHttp);
 
-// Agent for testing everything
-// We need to use agent with cookies/sessions to test authentication
-// without it, the sessions will not be saved between requests
+// Agent maintains cookies/sessions across requests (required for auth)
 const agent = chai.request.agent(server);
 
-describe('Profiles', () => {
+describe('Profiles', function() {
+    // Extended timeout required for integration tests because:
+    // - Real HTTP requests to Express server
+    // - Database operations via Prisma
+    // - bcrypt password hashing (~50-100ms per hash)
+    // Note: Must use function() not arrow function for this.timeout() to work
+    this.timeout(10000);
+
     before(async () => {
         // delete all the users
         await prisma.user.deleteMany({})

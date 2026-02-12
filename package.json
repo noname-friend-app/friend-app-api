@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "npx mocha src/test --exit",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "npx mocha src/test/unit --exit",
+    "test:integration": "npx mocha src/test/integration --exit",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "deploy": "npx prisma generate && npx prisma migrate deploy && npm run start",

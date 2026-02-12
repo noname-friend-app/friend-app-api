@@ -1,5 +1,5 @@
 const prisma = require('../../utils/prisma');
-const { isValidPassword } = require('../../utils/auth');
+const { isValidPassword, generateHash } = require('../../utils/auth');
 
 const changePassword = async (req, res) => {
     const { password, newPassword } = req.body;
