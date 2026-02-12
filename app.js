@@ -35,6 +35,8 @@ app.use(session({
 
 app.use(morgan('dev')); 
 
+app.use(express.static('static'));
+
 // custom middlware
 
 const auth = require('./routes/auth.js');
