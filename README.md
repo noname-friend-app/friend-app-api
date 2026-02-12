@@ -30,9 +30,27 @@ npx prisma migrate deploy
 npm start
 ```
 
-### Using Docker-Compose
+### Development
+
+Start the database dependencies:
 ```
-docker-compose up
+docker compose up -d
+```
+
+Run the app with hot-reloading:
+```
+npm run dev
+```
+
+### Testing
+```
+npm test
+```
+
+Run specific test suites:
+```
+npm run test:unit
+npm run test:integration
 ```
  
 # External Links
