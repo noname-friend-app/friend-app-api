@@ -4,11 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "npx mocha --exit",
-    "start": "node app.js",
-    "dev": "nodemon app.js",
+    "test": "npx mocha src/test --exit",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
     "deploy": "npx prisma generate && npx prisma migrate deploy && npm run start",
-    "railway": "npx prisma generate && npx prisma migrate deploy && npx node app.js"
+    "railway": "npx prisma generate && npx prisma migrate deploy && npx node src/app.js"
   },
   "keywords": [],
   "author": "",
