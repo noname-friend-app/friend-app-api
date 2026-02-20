@@ -11,7 +11,38 @@ const redis = require("redis");
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient({
-    url: process.env.REDIS_URL
+    url: process.env.REDIS_URL,
+    retry_strategy: (options) => {
+        if (options.error && options.error.code === 'ECONNREFUSED') {
+            logger.error('Redis server refused connection');
+            return new Error('Redis server refused connection');
+        }
+        if (options.total_retry_time > 1000 * 60 * 60) {
+            logger.error('Redis retry time exhausted');
+            return new Error('Retry time exhausted');
+        }
+        if (options.attempt > 10) {
+            logger.warn('Redis max retry attempts reached, will keep trying with backoff');
+        }
+        // Reconnect after increasing delay (max 30 seconds)
+        return Math.min(options.attempt * 1000, 30000);
+    }
+});
+
+redisClient.on('error', (err) => {
+    logger.error('Redis error:', err.message);
+});
+
+redisClient.on('connect', () => {
+    logger.info('Redis connected');
+});
+
+redisClient.on('reconnecting', () => {
+    logger.info('Redis reconnecting');
+});
+
+redisClient.on('end', () => {
+    logger.warn('Redis connection closed');
 });
 
 const app = express();
