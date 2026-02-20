@@ -1,10 +1,10 @@
 const express = require('express');
 
-const auth = require('./routes/auth.js');
-const profile = require('./routes/profile.js');
-const groups = require('./routes/groups.js');
-const social = require('./routes/social.js');
-const lists = require('./routes/lists.js');
+const auth = require('./auth');
+const profile = require('./profile');
+const groups = require('./groups');
+const social = require('./social');
+const lists = require('./lists');
 
 const router = express.Router();
 
