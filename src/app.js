@@ -1,13 +1,15 @@
-const express = require('express');
 const bodyParser = require('body-parser');
+const connectRedis = require("connect-redis");
 const cors = require('cors');
-const logger = require('./utils/logger');
-const { httpLogger } = require('./utils/logger');
+const express = require('express');
+const redis = require("redis");
+const session = require("express-session");
+
 require('dotenv').config();
 
-const session = require("express-session");
-const connectRedis = require("connect-redis");
-const redis = require("redis");
+const logger = require('./utils/logger');
+const { httpLogger } = require('./utils/logger');
+const routes = require('./routes/index');
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient({
@@ -27,23 +29,19 @@ const redisClient = redis.createClient({
         // Reconnect after increasing delay (max 30 seconds)
         return Math.min(options.attempt * 1000, 30000);
     }
-});
-
-redisClient.on('error', (err) => {
-    logger.error('Redis error:', err.message);
-});
-
-redisClient.on('connect', () => {
-    logger.info('Redis connected');
-});
-
-redisClient.on('reconnecting', () => {
-    logger.info('Redis reconnecting');
-});
-
-redisClient.on('end', () => {
-    logger.warn('Redis connection closed');
-});
+})
+    .on('error', (err) => {
+        logger.error('Redis error:', err.message);
+    })
+    .on('connect', () => {
+        logger.info('Redis connected');
+    })
+    .on('reconnecting', () => {
+        logger.info('Redis reconnecting');
+    })
+    .on('end', () => {
+        logger.warn('Redis connection closed');
+    });
 
 const app = express();
 
@@ -57,30 +55,16 @@ app.use(cors({
     credentials: true
 }));
 app.use(bodyParser.json());
-
 app.use(session({
     store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
 }));
-
 app.use(express.static('static'));
 app.use(httpLogger);
 
-// custom middlware
-
-const auth = require('./routes/auth.js');
-const profile = require('./routes/profile.js');
-const groups = require('./routes/groups.js');
-const social = require('./routes/social.js');
-const lists = require('./routes/lists.js');
-
-app.use(auth);
-app.use(profile);
-app.use(groups);
-app.use(social);
-app.use(lists);
+app.use(routes);
 
 app.get('/', (req, res) => {
     res.send({
